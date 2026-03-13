@@ -155,6 +155,40 @@ class TemporalAlignmentJitter:
 
 
 @dataclass
+class SelectChannels:
+    """Zeroes out electrode channels beyond the first ``n_channels`` per band.
+    Simulates using fewer electrodes. Applied after spectrogram; input shape
+    (T, bands, channels, freq)."""
+
+    n_channels: int = 16
+
+    def __call__(self, tensor: torch.Tensor) -> torch.Tensor:
+        if self.n_channels >= tensor.shape[2]:
+            return tensor
+        out = tensor.clone()
+        out[:, :, self.n_channels :, :] = 0.0
+        return out
+
+
+@dataclass
+class Downsample:
+    """Downsamples the input tensor along the time dimension (dim 0) by
+    keeping every ``factor``-th sample. Simulates recording at a lower
+    sampling rate.
+
+    Args:
+        factor (int): Downsampling factor. 1 means no downsampling.
+    """
+
+    factor: int = 1
+
+    def __call__(self, tensor: torch.Tensor) -> torch.Tensor:
+        if self.factor <= 1:
+            return tensor
+        return tensor[:: self.factor]
+
+
+@dataclass
 class LogSpectrogram:
     """Creates log10-scaled spectrogram from an EMG signal. In the case of
     multi-channeled signal, the channels are treated independently.

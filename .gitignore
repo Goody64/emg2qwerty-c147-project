@@ -50,6 +50,11 @@ lightning_logs/
 data
 bids_data
 *.tar.gz
+89335547/
+emg2qwerty-data-2021-08/
+
+# Experiment artifacts
+results/
 
 # LM
 wikitext-103-raw*

@@ -15,6 +15,23 @@ _Last updated 2/13/2025_
     - **Q: How do we update these configuration files?** A: Note the structure of YAML files include basic key-value pairs (i.e. ```<key>: <value>```) and hierarchical structure. So, for instance, if we wanted to update the ```mlp_features``` hyperparameter of the ```TDSConvCTCModule```, we would change the value at line 5 of ```config/model/tds_conv_ctc.yaml``` (under ```module```). _Read more details [here](https://pytorch-lightning.readthedocs.io/en/1.3.8/common/lightning_cli.html)._
     - **Q: Where do we configure data splitting?** A: Refer to ```config/user/single_user.yaml```. Be careful with your edits, so that you don't accidentally move the test data into your training set.
 
+## Project overview (Jacob Goodman)
+
+This repo contains my C147/247 final project code, built on top of the official `emg2qwerty` implementation. The main changes are:
+
+- **New architectures**: added BiLSTM, BiGRU, and Transformer CTC encoders alongside the original TDS baseline (`config/model/*.yaml`, `modules.py`).
+- **Single-subject training configs**: custom user configs for 4/8/12/16 sessions (`config/user/single_user_*sessions.yaml`).
+- **Ablation scripts**: channel, sampling-rate, data, and augmentation ablations plus figure generation (`scripts/evaluate_all.py`, `scripts/generate_figures.py`, `scripts/wait_and_update_data_ablation.py`).
+- **Transforms**: minor updates to preprocessing and SpecAugment settings (`emg2qwerty/transforms.py`, `config/transforms/*.yaml`).
+
+To reproduce the main experiments from my report (subject `#89335547`):
+
+- **TDS baseline + ablations**: see `config/model/tds_conv_ctc.yaml` and the single-user configs in `config/user/`. Run training/eval via `python -m emg2qwerty.train user=single_user_16sessions model=tds_conv_ctc ...` (mirroring the commands in the original README, but with the updated user/model names).
+- **BiLSTM / BiGRU / Transformer**: swap the `model=` config to `bilstm_ctc`, `bigru_ctc`, or `transformer_ctc` respectively.
+- **Figures and tables in the writeup**: after running the evaluation scripts, generate figures with `scripts/generate_figures.py` and copy them into the `writeup/figures/` directory.
+
+The sections below are the original `emg2qwerty` README (slightly edited only where necessary). Environment setup and dataset download remain the same, but you can ignore the `git clone` command if you are already viewing this project from my course repo.
+
 # emg2qwerty
 [ [`Paper`](https://arxiv.org/abs/2410.20081) ] [ [`Dataset`](https://fb-ctrl-oss.s3.amazonaws.com/emg2qwerty/emg2qwerty-data-2021-08.tar.gz) ] [ [`Blog`](https://ai.meta.com/blog/open-sourcing-surface-electromyography-datasets-neurips-2024/) ] [ [`BibTeX`](#citing-emg2qwerty) ]
 
